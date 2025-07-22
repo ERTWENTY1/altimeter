@@ -1,0 +1,126 @@
+import csv
+import datetime
+import random
+import matplotlib.pyplot as plt
+
+class Altimeter:
+    def __init__(self, data_file="altitude_readings.csv"):
+        self.data_file = data_file
+        self.readings = []
+        self.load_data()
+
+    def load_data(self):
+        """Load existing altitude readings from CSV file."""
+        try:
+            with open(self.data_file, mode='r') as file:
+                reader = csv.DictReader(file)
+                self.readings = [
+                    {"timestamp": row["timestamp"], "altitude": float(row["altitude"])}
+                    for row in reader
+                ]
+        except FileNotFoundError:
+            self.readings = []
+
+    def save_data(self, altitude):
+        """Save a new altitude reading to CSV file."""
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open(self.data_file, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            if not self.readings:  # Write header if file is new
+                writer.writerow(["timestamp", "altitude"])
+            writer.writerow([timestamp, altitude])
+        self.readings.append({"timestamp": timestamp, "altitude": altitude})
+
+    def simulate_pressure_to_altitude(self, pressure):
+        """Convert pressure (hPa) to altitude (meters) using barometric formula."""
+        P0 = 1013.25  # Standard sea-level pressure in hPa
+        return 44330.77 * (1 - (pressure / P0) ** 0.190263)
+
+    def add_reading(self, altitude=None, pressure=None):
+        """Add a new altitude reading (direct or from pressure) and check for alerts."""
+        if pressure is not None:
+            altitude = self.simulate_pressure_to_altitude(pressure)
+        elif altitude is None:
+            print("Error: Provide either altitude or pressure.")
+            return
+        if not isinstance(altitude, (int, float)) or altitude < -500 or altitude > 9000:
+            print("Error: Invalid altitude reading (must be -500 to 9000 meters).")
+            return
+        self.save_data(altitude)
+        print(f"Altitude reading added: {altitude:.1f} meters at {self.readings[-1]['timestamp']}")
+        self.check_alerts()
+
+    def check_alerts(self):
+        """Check for rapid altitude changes."""
+        if len(self.readings) < 2:
+            return
+        current = self.readings[-1]
+        previous = self.readings[-2]
+        current_time = datetime.datetime.strptime(current["timestamp"], "%Y-%m-%d %H:%M:%S")
+        previous_time = datetime.datetime.strptime(previous["timestamp"], "%Y-%m-%d %H:%M:%S")
+        time_diff = (current_time - previous_time).total_seconds() / 60  # Minutes
+        altitude_diff = abs(current["altitude"] - previous["altitude"])
+        if time_diff <= 5 and altitude_diff > 100:
+            print(f"ALERT: Rapid altitude change detected! {altitude_diff:.1f} meters in {time_diff:.1f} minutes.")
+
+    def show_stats(self):
+        """Display statistics of altitude readings."""
+        if not self.readings:
+            print("No readings available.")
+            return
+        altitude_values = [reading["altitude"] for reading in self.readings]
+        avg_altitude = sum(altitude_values) / len(altitude_values)
+        print(f"Total Readings: {len(altitude_values)}")
+        print(f"Average Altitude: {avg_altitude:.1f} meters")
+        print(f"Min Altitude: {min(altitude_values):.1f} meters")
+        print(f"Max Altitude: {max(altitude_values):.1f} meters")
+
+    def plot_trend(self):
+        """Plot altitude readings over time."""
+        if not self.readings:
+            print("No data to plot.")
+            return
+        timestamps = [reading["timestamp"] for reading in self.readings]
+        altitude_values = [reading["altitude"] for reading in self.readings]
+        plt.plot(timestamps, altitude_values, marker='o')
+        plt.xlabel("Timestamp")
+        plt.ylabel("Altitude (meters)")
+        plt.title("Altitude Trend")
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
+
+def main():
+    altimeter = Altimeter()
+    while True:
+        print("\nAltimeter Menu:")
+        print("1. Add new altitude reading (manual)")
+        print("2. Simulate altitude reading (from pressure)")
+        print("3. Show statistics")
+        print("4. Plot altitude trend")
+        print("5. Exit")
+        choice = input("Enter choice (1-5): ")
+        
+        if choice == "1":
+            try:
+                altitude = float(input("Enter altitude (meters): "))
+                altimeter.add_reading(altitude=altitude)
+            except ValueError:
+                print("Error: Please enter a valid number.")
+        elif choice == "2":
+            # Simulate pressure between 300 hPa (high altitude) and 1013.25 hPa (sea level)
+            pressure = random.uniform(300, 1013.25)
+            print(f"Simulated pressure: {pressure:.2f} hPa")
+            altimeter.add_reading(pressure=pressure)
+        elif choice == "3":
+            altimeter.show_stats()
+        elif choice == "4":
+            altimeter.plot_trend()
+        elif choice == "5":
+            print("Exiting Altimeter.")
+            break
+        else:
+            print("Invalid choice. Try again.")
+
+if __name__ == "__main__":
+    main()
