@@ -1,0 +1,35 @@
+#include <Wire.h>
+#include <Adafruit_BMP280.h>
+
+Adafruit_BMP280 bmp; // Create BMP280 object
+
+float seaLevelPressure = 1013.25; // Standard sea-level pressure in hPa
+
+void setup() {
+  Serial.begin(9600);
+  
+  // Initialize BMP280 sensor
+  if (!bmp.begin(0x76)) { // Default I2C address for BMP280
+    Serial.println("Could not find BMP280 sensor, check wiring!");
+    while (1); // Halt if sensor not found
+  }
+  
+  Serial.println("BMP280 Altimeter Test");
+}
+
+void loop() {
+  // Read pressure in hPa
+  float pressure = bmp.readPressure() / 100.0; // Convert Pa to hPa
+  
+  // Calculate altitude using the barometric formula
+  float altitude = 44330.0 * (1.0 - pow(pressure / seaLevelPressure, 0.1903));
+  
+  // Print results
+  Serial.print("Pressure: ");
+  Serial.print(pressure);
+  Serial.print(" hPa, Altitude: ");
+  Serial.print(altitude);
+  Serial.println(" meters");
+  
+  delay(2000); // Update every 2 seconds
+}
