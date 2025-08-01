@@ -101,26 +101,4 @@ def main():
         print("5. Exit")
         choice = input("Enter choice (1-5): ")
         
-        if choice == "1":
-            try:
-                altitude = float(input("Enter altitude (meters): "))
-                altimeter.add_reading(altitude=altitude)
-            except ValueError:
-                print("Error: Please enter a valid number.")
-        elif choice == "2":
-            # Simulate pressure between 300 hPa (high altitude) and 1013.25 hPa (sea level)
-            pressure = random.uniform(300, 1013.25)
-            print(f"Simulated pressure: {pressure:.2f} hPa")
-            altimeter.add_reading(pressure=pressure)
-        elif choice == "3":
-            altimeter.show_stats()
-        elif choice == "4":
-            altimeter.plot_trend()
-        elif choice == "5":
-            print("Exiting Altimeter.")
-            break
-        else:
-            print("Invalid choice. Try again.")
-
-if __name__ == "__main__":
-    main()
+      
