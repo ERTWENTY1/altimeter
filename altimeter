@@ -90,15 +90,6 @@ class Altimeter:
         plt.tight_layout()
         plt.show()
 
-def main():
-    altimeter = Altimeter()
-    while True:
-        print("\nAltimeter Menu:")
-        print("1. Add new altitude reading (manual)")
-        print("2. Simulate altitude reading (from pressure)")
-        print("3. Show statistics")
-        print("4. Plot altitude trend")
-        print("5. Exit")
-        choice = input("Enter choice (1-5): ")
+
         
       
