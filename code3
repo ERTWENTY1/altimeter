@@ -1,0 +1,9 @@
+     timestamps = [reading["timestamp"] for reading in self.readings]
+        altitude_values = [reading["altitude"] for reading in self.readings]
+        plt.plot(timestamps, altitude_values, marker='o')
+        plt.xlabel("Timestamp")
+        plt.ylabel("Altitude (meters)")
+        plt.title("Altitude Trend")
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        plt.show()
