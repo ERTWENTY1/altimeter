@@ -1,0 +1,4 @@
+    def plot_trend(self):
+        """Plot altitude readings over time."""
+        if not self.readings:
+            print("No data to plot.")
