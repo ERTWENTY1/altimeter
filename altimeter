@@ -75,10 +75,7 @@ class Altimeter:
         print(f"Min Altitude: {min(altitude_values):.1f} meters")
         print(f"Max Altitude: {max(altitude_values):.1f} meters")
 
-    def plot_trend(self):
-        """Plot altitude readings over time."""
-        if not self.readings:
-            print("No data to plot.")
+
             return
    
 
