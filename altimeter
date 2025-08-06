@@ -68,15 +68,7 @@ class Altimeter:
         if not self.readings:
             print("No readings available.")
             return
-        altitude_values = [reading["altitude"] for reading in self.readings]
-        avg_altitude = sum(altitude_values) / len(altitude_values)
-        print(f"Total Readings: {len(altitude_values)}")
-        print(f"Average Altitude: {avg_altitude:.1f} meters")
-        print(f"Min Altitude: {min(altitude_values):.1f} meters")
-        print(f"Max Altitude: {max(altitude_values):.1f} meters")
-
-
-            return
+        
    
 
         
